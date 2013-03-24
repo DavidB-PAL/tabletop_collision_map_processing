@@ -175,7 +175,7 @@ class CollisionMapProcessor
     processing_srv_ = priv_nh_.advertiseService(COLLISION_SERVICE_NAME,
         &CollisionMapProcessor::serviceCallback, this);
 
-    // The confidence value of each model fitment must be above this value
+    // The confidence value from mesh fitting will be below this value if it's a good match
     root_nh_.param<double>("/tabletop_object_recognition/min_marker_quality", min_marker_quality_, 0.003);
   }
 

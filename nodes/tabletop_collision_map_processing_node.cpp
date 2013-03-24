@@ -152,6 +152,7 @@ class CollisionMapProcessor
           }
 
           //----------------- add the object to the list -------------------------
+          object.collision_name = collision_name; // add the collision name for each cluster object
           response.graspable_objects.push_back(object);
         }
         

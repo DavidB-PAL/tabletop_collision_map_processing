@@ -52,6 +52,7 @@ class CollisionMapProcessor
     CollisionMapInterface collision_map_;
     ros::ServiceServer processing_srv_;
     tf::TransformListener listener_;
+    double min_marker_quality_; 
 
     bool serviceCallback(TabletopCollisionMapProcessing::Request &request,
                          TabletopCollisionMapProcessing::Response &response)
@@ -126,7 +127,7 @@ class CollisionMapProcessor
           {
             int ri = request.detection_result.cluster_model_indices[c];
             if (!request.detection_result.models[ri].model_list.empty() &&
-                request.detection_result.models[ri].model_list[0].confidence < 0.005)
+                request.detection_result.models[ri].model_list[0].confidence < min_marker_quality_)
             {
               object.potential_models = request.detection_result.models[ri].model_list;
               //convert the results to the desired frame
@@ -173,6 +174,9 @@ class CollisionMapProcessor
     //advertise service
     processing_srv_ = priv_nh_.advertiseService(COLLISION_SERVICE_NAME,
         &CollisionMapProcessor::serviceCallback, this);
+
+    // The confidence value of each model fitment must be above this value
+    root_nh_.param<double>("/tabletop_object_recognition/min_marker_quality", min_marker_quality_, 0.003);
   }
 
     ~CollisionMapProcessor() {}

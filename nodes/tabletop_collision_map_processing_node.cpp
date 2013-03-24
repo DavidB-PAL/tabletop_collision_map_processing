@@ -112,9 +112,43 @@ class CollisionMapProcessor
             ROS_WARN("Failed to extend bbox to table; using original dimensions");
           }
 
-          //-------------- add the object to the collision map as a bounding box ---------------
           std::string collision_name;
+          //-------------- add the object to the collision map as a bounding box ---------------
           collision_map_.processCollisionGeometryForBoundingBox(bbox, collision_name);
+          //
+          // For matched object models, you can display the model mesh on the Collision Map
+          // instead of a blue bounding box.
+          // Disable the line above, and enable the block below:
+          // 
+          /*
+          bool use_object_as_bounding_box = false;
+          int mi;
+          if (!request.detection_result.cluster_model_indices.empty())
+          {
+            // Check if object PointCloud cluster has been confidently recognized from the objects database
+            // This test is akward because cluster_model_indices may exist, but models may be empty
+            mi = request.detection_result.cluster_model_indices[c];
+            if (!request.detection_result.models[mi].model_list.empty() &&
+                      request.detection_result.models[mi].model_list[0].confidence < min_marker_quality_)
+            {
+              use_object_as_bounding_box = true;
+            }
+          }
+          if (use_object_as_bounding_box)
+          {
+            // Object is recognized, add mesh to Collision Map
+            collision_map_.processCollisionGeometryForObjectAsBoundingBox(request.detection_result.models[mi].model_list[0], collision_name );
+            // Removed, a prototype for increasing the height of the bounding box, to allow for noise in the PointCloud
+            //collision_map_.processCollisionGeometryForObjectAsBoundingBoxAndExtendHeight(request.detection_result.models[mi].model_list[0],
+            //                                                                                 collision_name, request.detection_result.table );
+          }
+          else
+          {
+            // default, create bounding box around object cluster
+            collision_map_.processCollisionGeometryForBoundingBox(bbox, collision_name);
+          }
+          */
+
           //insert its collision name into the list
           response.collision_object_names.push_back(collision_name);
 
